@@ -5,7 +5,8 @@ import win32api, win32con, win32gui, win32ui
 class draw_crosshair():
     def __init__(self):
         self.fontSize = 48
-        self.color = win32api.RGB(0,255,0)
+        self.alpha = 255
+        self.color = win32api.RGB(255,0,0)
         self.text = '＋'
 
     def join(self):
@@ -62,7 +63,7 @@ class draw_crosshair():
         )
 
         # https://msdn.microsoft.com/en-us/library/windows/desktop/ms633540(v=vs.85).aspx
-        win32gui.SetLayeredWindowAttributes(self.hWindow, 0x00ffffff, 180, win32con.LWA_COLORKEY | win32con.LWA_ALPHA)
+        win32gui.SetLayeredWindowAttributes(self.hWindow, 0x00ffffff, self.alpha, win32con.LWA_COLORKEY | win32con.LWA_ALPHA)
 
         # https://msdn.microsoft.com/en-us/library/windows/desktop/dd145167(v=vs.85).aspx
         #win32gui.UpdateWindow(self.hWindow)
