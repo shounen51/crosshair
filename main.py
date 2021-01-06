@@ -5,6 +5,7 @@ from input_listener import input_listener
 
 class main():
     def __init__(self):
+        os.system('cls')
         self.d = draw_crosshair()
         i = input_listener(self.switch)
         i.start()
@@ -13,13 +14,13 @@ class main():
         stop = False
         commed = ['s', 'a', 'c']
         while not stop:
-            print('https://github.com/shounen51/crosshair')
-            print('-------------------------------')
-            print('> 使用 [左ALT] + [`] 開關準星 <')
-            print('-------------------------------')
-            print('s [int]          修改準星大小       (預設 48)')
-            print('a [int]          修改準星透明度0~99 (預設 0)')
-            print('c [int.int.int]  修改準星RGB顏色    (預設 255.0.0)\n')
+            print(' https://github.com/shounen51/crosshair')
+            print(' -------------------------------')
+            print(' > 使用 [左ALT] + [`] 開關準星 <')
+            print(' -------------------------------')
+            print(' s [int]          修改準星大小       (預設 48)')
+            print(' a [int]          修改準星透明度0~99 (預設 0)')
+            print(' c [int.int.int]  修改準星RGB顏色    (預設 255.0.0)\n')
 
             print('指令範例:')
             print('c 0.255.0\n')
