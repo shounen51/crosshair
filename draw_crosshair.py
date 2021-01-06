@@ -8,20 +8,44 @@ class draw_crosshair():
         self.alpha = 255
         self.color = win32api.RGB(255,0,0)
         self.text = '＋'
+        self.DRAWING = False
 
     def join(self):
         self.t.join()
 
-    def create(self):
+    def draw(self):
+        self.t = threading.Thread(target=self.first_run, )
+        self.t.setDaemon(True)
+        self.t.start()
+
+    def modify(self, fontSize=None, alpha=None, color=None):
+        if fontSize:
+            try:
+                self.fontSize = int(fontSize)
+            except:
+                print('try use int')
+        if alpha:
+            try:
+                self.alpha = int(alpha)
+            except:
+                print('try use int')
+        if color:
+            try:
+                self.color = win32api.RGB(int(color[0]), int(color[1]), int(color[2]))
+            except:
+                print('try use (R,G,B)')
+
+    def redraw(self):
         self.t = threading.Thread(target=self.run, )
         self.t.setDaemon(True)
         self.t.start()
 
     def close(self):
         win32gui.SendMessage(self.hWindow, win32con.WM_DESTROY, 0, 0)
+        self.DRAWING = False
 
-    def run(self):
-        hInstance = win32api.GetModuleHandle()
+    def register(self):
+        self.hInstance = win32api.GetModuleHandle()
         className = 'MyWindowClassName'
 
         # https://msdn.microsoft.com/en-us/library/windows/desktop/ms633576(v=vs.85).aspx
@@ -30,13 +54,14 @@ class draw_crosshair():
         # https://msdn.microsoft.com/en-us/library/windows/desktop/ff729176(v=vs.85).aspx
         wndClass.style          = win32con.CS_HREDRAW | win32con.CS_VREDRAW
         wndClass.lpfnWndProc    = self.wndProc
-        wndClass.hInstance      = hInstance
+        wndClass.hInstance      = self.hInstance
         wndClass.hCursor        = win32gui.LoadCursor(None, win32con.IDC_ARROW)
         wndClass.hbrBackground  = win32gui.GetStockObject(win32con.WHITE_BRUSH)
         wndClass.lpszClassName  = className
         # win32gui does not support RegisterClassEx
-        wndClassAtom = win32gui.RegisterClass(wndClass)
+        self.wndClassAtom = win32gui.RegisterClass(wndClass)
 
+    def create_window(self):
         # https://msdn.microsoft.com/en-us/library/windows/desktop/ff700543(v=vs.85).aspx
         # Consider using: WS_EX_COMPOSITED, WS_EX_LAYERED, WS_EX_NOACTIVATE, WS_EX_TOOLWINDOW, WS_EX_TOPMOST, WS_EX_TRANSPARENT
         # The WS_EX_TRANSPARENT flag makes events (like mouse clicks) fall through the window.
@@ -49,19 +74,20 @@ class draw_crosshair():
         # https://msdn.microsoft.com/en-us/library/windows/desktop/ms632680(v=vs.85).aspx
         self.hWindow = win32gui.CreateWindowEx(
             exStyle,
-            wndClassAtom,
+            self.wndClassAtom,
             None, # WindowName
             style,
-            0, # x
-            0, # y
+            1, # x
+            -2, # y
             win32api.GetSystemMetrics(win32con.SM_CXSCREEN), # width
             win32api.GetSystemMetrics(win32con.SM_CYSCREEN), # height
             None, # hWndParent
             None, # hMenu
-            hInstance,
+            self.hInstance,
             None # lpParam
         )
 
+    def show_window(self):
         # https://msdn.microsoft.com/en-us/library/windows/desktop/ms633540(v=vs.85).aspx
         win32gui.SetLayeredWindowAttributes(self.hWindow, 0x00ffffff, self.alpha, win32con.LWA_COLORKEY | win32con.LWA_ALPHA)
 
@@ -71,11 +97,20 @@ class draw_crosshair():
         # https://msdn.microsoft.com/en-us/library/windows/desktop/ms633545(v=vs.85).aspx
         win32gui.SetWindowPos(self.hWindow, win32con.HWND_TOPMOST, 0, 0, 0, 0,
             win32con.SWP_NOACTIVATE | win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_SHOWWINDOW)
-
         # https://msdn.microsoft.com/en-us/library/windows/desktop/ms633548(v=vs.85).aspx
         # win32gui.ShowWindow(self.hWindow, win32con.SW_SHOW)
-
+        self.DRAWING = True
         win32gui.PumpMessages()
+
+    def first_run(self):
+        self.register()
+        self.create_window()
+        self.show_window()
+
+    def run(self):
+        self.create_window()
+        self.show_window()
+
     def wndProc(self, hWnd, message, wParam, lParam):
         if message == win32con.WM_PAINT:
             hdc, paintStruct = win32gui.BeginPaint(hWnd)
@@ -106,7 +141,7 @@ class draw_crosshair():
             return 0
 
         elif message == win32con.WM_DESTROY:
-            print('Closing the window.')
+            # print('Closing the window.')
             win32gui.PostQuitMessage(0)
             return 0
 
@@ -114,6 +149,10 @@ class draw_crosshair():
             return win32gui.DefWindowProc(hWnd, message, wParam, lParam)
 
 if __name__ == "__main__":
+    import time
     d = draw_crosshair()
-    d.create()
+    d.draw()
+    time.sleep(1)
+    d.modify(fontSize=52, alpha=100, color=(0,255,0))
+    d.redraw()
     d.join()
