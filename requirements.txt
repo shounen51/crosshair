@@ -1,2 +1,2 @@
 pynput==1.6.8
-pywin32
+pywin32==228

@@ -13,9 +13,10 @@ class main():
         stop = False
         commed = ['s', 'a', 'c']
         while not stop:
-            print('-------------------------')
-            print('> 使用 左ALT+` 開關準星 <')
-            print('-------------------------')
+            print('https://github.com/shounen51/crosshair')
+            print('-------------------------------')
+            print('> 使用 [左ALT] + [`] 開關準星 <')
+            print('-------------------------------')
             print('s [int]          修改準星大小       (預設 48)')
             print('a [int]          修改準星透明度0~99 (預設 0)')
             print('c [int.int.int]  修改準星RGB顏色    (預設 255.0.0)\n')
